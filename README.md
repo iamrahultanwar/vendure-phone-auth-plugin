@@ -10,6 +10,9 @@ This plugin adds phone authentication to the Vendure GraphQL API.
 
 ## Usage
 
+### Backend
+
+
 ```ts
 import { PhoneAuthPlugin } from "vendure-phone-auth-plugin";
 
@@ -37,4 +40,32 @@ export const config: VendureConfig = {
     }),
   ],
 };
+```
+
+### Frontend
+
+```graphql
+
+gql`
+  mutation requestOtp($phone: String!) {
+    requestOtp(phone: $phone)
+  }
+`;
+
+gql`
+  mutation PhoneAuthenticate($phone: String!, $otp: String!) {
+    authenticate(input: { phone: { phone: $phone, otp: $otp } }) {
+      __typename
+      ... on CurrentUser {
+        id
+        identifier
+      }
+      ... on ErrorResult {
+        errorCode
+        message
+      }
+    }
+  }
+`;
+
 ```
