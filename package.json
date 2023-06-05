@@ -1,6 +1,6 @@
 {
   "name": "vendure-phone-auth-plugin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Vendure plugin which adds phone authentication to the storefront",
   "author": "Rahul Tanwar <mr.rahultanwar@gmail.com>",
   "repository": "https://github.com/iamrahultanwar/vendure-phone-auth-plugin",
