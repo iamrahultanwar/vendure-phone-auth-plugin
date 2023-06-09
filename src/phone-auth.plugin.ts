@@ -47,7 +47,7 @@ class PhoneOtp extends VendureEntity {
 
 @Injectable()
 class PhoneAuthService implements OnApplicationBootstrap {
-  constructor(private connection: TransactionalConnection) {}
+  constructor(private connection: TransactionalConnection) { }
 
   async onApplicationBootstrap() {
     if (!PhoneAuthPlugin.options?.sendOtp) {
@@ -69,13 +69,26 @@ class PhoneAuthService implements OnApplicationBootstrap {
   async requestOtp(ctx: RequestContext, phone: string, otp: string) {
     const phoneOtp = new PhoneOtp();
     phoneOtp.phone = phone;
-    phoneOtp.otp = otpGenerator.generate(6, {
-      upperCaseAlphabets: false,
-      specialChars: false,
-      digits: true,
-      lowerCaseAlphabets: false,
-    });
+
+    // added config for otp generator
+    if (PhoneAuthPlugin.options?.otpGeneratorOptions && PhoneAuthPlugin.options?.otpGeneratorOptions.length) {
+      phoneOtp.otp = otpGenerator.generate(PhoneAuthPlugin.options?.otpGeneratorOptions.length, {
+        upperCaseAlphabets: PhoneAuthPlugin.options?.otpGeneratorOptions.upperCaseAlphabets || false,
+        specialChars: PhoneAuthPlugin.options?.otpGeneratorOptions.specialChars || false,
+        digits: PhoneAuthPlugin.options?.otpGeneratorOptions.digits || true,
+        lowerCaseAlphabets: PhoneAuthPlugin.options?.otpGeneratorOptions.lowerCaseAlphabets || false,
+      });
+    } else {
+      phoneOtp.otp = otpGenerator.generate(6, {
+        upperCaseAlphabets: false,
+        specialChars: false,
+        digits: true,
+        lowerCaseAlphabets: false,
+      });
+    }
+
     phoneOtp.verified = false;
+
     if (PhoneAuthPlugin.options?.sendOtp) {
       try {
         await PhoneAuthPlugin.options.sendOtp(phoneOtp.phone, phoneOtp.otp);
@@ -124,7 +137,7 @@ class PhoneAuthService implements OnApplicationBootstrap {
 
 @Resolver()
 class PhoneAuthResolver {
-  constructor(private phoneAuthService: PhoneAuthService) {}
+  constructor(private phoneAuthService: PhoneAuthService) { }
 
   @Mutation()
   requestOtp(@Ctx() ctx: RequestContext, @Args() args: any) {
@@ -144,7 +157,7 @@ export class PhoneAuthenticationStrategy
   private phoneAuthService: PhoneAuthService;
   private customerService: CustomerService;
 
-  constructor() {}
+  constructor() { }
 
   init(injector: Injector) {
     this.externalAuthenticationService = injector.get(
@@ -230,6 +243,14 @@ export interface PhoneAuthPluginOptions {
     firstName: string;
     lastName: string;
   };
+  otpGeneratorOptions?: {
+    length?: number;
+    upperCaseAlphabets?: boolean;
+    specialChars?: boolean;
+    digits?: boolean;
+    lowerCaseAlphabets?: boolean;
+  }
+
 }
 
 @VendurePlugin({
