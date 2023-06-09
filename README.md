@@ -37,6 +37,14 @@ export const config: VendureConfig = {
           lastName: "",
         };
       },
+      // you can config otp generator here
+      otpGeneratorOptions?: {
+        length?: number; // required
+        upperCaseAlphabets?: boolean;
+        specialChars?: boolean;
+        digits?: boolean;
+        lowerCaseAlphabets?: boolean;
+      }
     }),
   ],
 };
