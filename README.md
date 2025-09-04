@@ -1,6 +1,6 @@
 # Vendure Phone Auth Plugin
 
-This plugin adds phone authentication to the Vendure GraphQL API.
+This plugin adds phone authentication to the Vendure GraphQL API. (Not maintained)
 
 ## Installation
 
